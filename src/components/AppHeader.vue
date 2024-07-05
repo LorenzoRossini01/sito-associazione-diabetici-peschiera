@@ -1,15 +1,24 @@
 <script>
+import { store } from "../store/index.js";
+import { signOutUser } from "../firebaseConfig";
+
 export default {
   data() {
     return {
       navLinkClasses:
         "hover:bg-blue-600 active:bg-blue-700 hover:text-white active:text-white py-2 px-4 md:px-6 rounded-full",
       isMenuOpen: false,
+      store,
     };
   },
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
+    },
+
+    signOut() {
+      signOutUser();
+      store.isAuthenticated = false;
     },
   },
 };
@@ -47,25 +56,27 @@ export default {
       <!-- Menu di Navigazione -->
       <ul class="hidden lg:flex flex-wrap gap-4 md:gap-10">
         <li>
-          <router-link to="/" :class="navLinkClasses">HOME</router-link>
+          <a href="/" :class="navLinkClasses">HOME</a>
         </li>
         <li>
-          <router-link to="/#about" :class="navLinkClasses"
-            >ABOUT US</router-link
+          <a href="#about" :class="navLinkClasses">ABOUT US</a>
+        </li>
+        <li>
+          <a href="#join" :class="navLinkClasses">JOIN US</a>
+        </li>
+        <li>
+          <a href="#events" :class="navLinkClasses">EVENTI</a>
+        </li>
+        <li>
+          <a href="#contacts" :class="navLinkClasses">CONTATTACI</a>
+        </li>
+        <li v-if="store.isAuthenticated">
+          <router-link to="/create-event" :class="navLinkClasses"
+            >AGGIUNGI EVENTO</router-link
           >
         </li>
-        <li>
-          <router-link to="/#join" :class="navLinkClasses">JOIN US</router-link>
-        </li>
-        <li>
-          <router-link to="/#events" :class="navLinkClasses"
-            >EVENTI</router-link
-          >
-        </li>
-        <li>
-          <router-link to="/#contacts" :class="navLinkClasses"
-            >CONTATTACI</router-link
-          >
+        <li v-if="store.isAuthenticated">
+          <a href="#" :class="navLinkClasses" @click="signOut">LOG-OUT</a>
         </li>
       </ul>
     </nav>
@@ -76,27 +87,27 @@ export default {
       class="lg:hidden flex flex-col gap-2 px-4 py-2 bg-white border rounded shadow-md absolute top-20 right-8 z-10"
     >
       <li>
-        <a href="/" class="block py-2 px-4 hover:bg-blue-200 rounded">HOME</a>
+        <a href="/" :class="navLinkClasses">HOME</a>
       </li>
       <li>
-        <a href="#about" class="block py-2 px-4 hover:bg-blue-200 rounded"
-          >ABOUT US</a
-        >
+        <a href="#about" :class="navLinkClasses">ABOUT US</a>
       </li>
       <li>
-        <a href="#join" class="block py-2 px-4 hover:bg-blue-200 rounded"
-          >JOIN US</a
-        >
+        <a href="#join" :class="navLinkClasses">JOIN US</a>
       </li>
       <li>
-        <a href="#events" class="block py-2 px-4 hover:bg-blue-200 rounded"
-          >EVENTI</a
-        >
+        <a href="#events" :class="navLinkClasses">EVENTI</a>
       </li>
       <li>
-        <a href="#contacts" class="block py-2 px-4 hover:bg-blue-200 rounded"
-          >CONTATTACI</a
+        <a href="#contacts" :class="navLinkClasses">CONTATTACI</a>
+      </li>
+      <li v-if="store.isAuthenticated">
+        <router-link to="/create-event" :class="navLinkClasses"
+          >AGGIUNGI EVENTO</router-link
         >
+      </li>
+      <li v-if="store.isAuthenticated">
+        <a href="#" :class="navLinkClasses" @click="signOut">LOG-OUT</a>
       </li>
     </ul>
   </div>

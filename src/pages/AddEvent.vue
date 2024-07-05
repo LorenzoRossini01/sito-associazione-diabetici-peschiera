@@ -6,6 +6,7 @@
 
 <script>
 import CreateEvent from "../components/CreateEvent.vue";
+
 export default {
   name: "AddEvent",
 

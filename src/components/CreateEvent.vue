@@ -1,5 +1,4 @@
 <script>
-// import { db } from "../firebase";
 import AppButton from "./AppButton.vue";
 export default {
   data() {
