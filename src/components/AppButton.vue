@@ -6,9 +6,11 @@ export default {
   computed: {
     buttonClasses() {
       if (this.type == "primary") {
-        return "px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-md text-white font-bold uppercase";
+        return "px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-md text-white font-bold uppercase shadow-md";
+      } else if (this.type == "reset") {
+        return "px-8 py-4 bg-white hover:bg-stone-200 rounded-md text-red-600 font-bold uppercase shadow-md";
       } else {
-        return "px-8 py-4 bg-white hover:bg-stone-200 rounded-md text-blue-600 font-bold uppercase";
+        return "px-8 py-4 bg-white hover:bg-stone-200 rounded-md text-blue-600 font-bold uppercase shadow-md";
       }
     },
   },
@@ -25,6 +27,8 @@ export default {
 </script>
 
 <template>
-  <button @click="handleClick()" :class="buttonClasses">{{ text }}</button>
+  <button @click="handleClick()" :type="type" :class="buttonClasses">
+    {{ text }}
+  </button>
 </template>
 <style></style>

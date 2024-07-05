@@ -47,19 +47,25 @@ export default {
       <!-- Menu di Navigazione -->
       <ul class="hidden lg:flex flex-wrap gap-4 md:gap-10">
         <li>
-          <a href="/" :class="navLinkClasses">HOME</a>
+          <router-link to="/" :class="navLinkClasses">HOME</router-link>
         </li>
         <li>
-          <a href="#about" :class="navLinkClasses">ABOUT US</a>
+          <router-link to="/#about" :class="navLinkClasses"
+            >ABOUT US</router-link
+          >
         </li>
         <li>
-          <a href="#join" :class="navLinkClasses">JOIN US</a>
+          <router-link to="/#join" :class="navLinkClasses">JOIN US</router-link>
         </li>
         <li>
-          <a href="#events" :class="navLinkClasses">EVENTI</a>
+          <router-link to="/#events" :class="navLinkClasses"
+            >EVENTI</router-link
+          >
         </li>
         <li>
-          <a href="#contacts" :class="navLinkClasses">CONTATTACI</a>
+          <router-link to="/#contacts" :class="navLinkClasses"
+            >CONTATTACI</router-link
+          >
         </li>
       </ul>
     </nav>

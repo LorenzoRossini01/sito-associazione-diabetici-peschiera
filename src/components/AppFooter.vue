@@ -17,6 +17,11 @@ export default {
         <li><a href="#join" class="hover:underline">Perchè associarsi?</a></li>
         <li><a href="#events" class="hover:underline">Eventi</a></li>
         <li><a href="#contacts" class="hover:underline">Contatti</a></li>
+        <li>
+          <router-link to="/create-event" class="hover:underline"
+            >Aggiungi Eventi</router-link
+          >
+        </li>
       </ul>
     </div>
   </footer>
