@@ -1,6 +1,6 @@
 <script>
 import { store } from "../store/index.js";
-import { signOutUser } from "../firebaseConfig";
+import supabase from "../lib/supabaseClient.js";
 
 export default {
   data() {
@@ -16,9 +16,15 @@ export default {
       this.isMenuOpen = !this.isMenuOpen;
     },
 
-    signOut() {
-      signOutUser();
-      store.isAuthenticated = false;
+    async signOut() {
+      try {
+        let { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        localStorage.removeItem("supabaseSession"); // Rimuovi le informazioni di sessione dal localStorage
+        this.store.isAuthenticated = false; // Aggiorna lo stato di autenticazione nello store
+      } catch (error) {
+        console.error("Error signing out:", error.message);
+      }
     },
   },
 };

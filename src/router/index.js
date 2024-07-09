@@ -3,7 +3,6 @@ import Home from "../pages/Home.vue";
 import AddEvent from "../pages/AddEvent.vue";
 import EventDetail from "../pages/EventDetail.vue";
 import LoginPage from "../pages/LoginPage.vue";
-import { auth } from "../firebaseConfig"; // Importa l'oggetto di autenticazione Firebase
 
 const routes = [
   {
@@ -36,7 +35,7 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     if (to.hash) {
       return {
-        el: to.hash,
+        selector: to.hash,
         behavior: "smooth",
       };
     } else if (savedPosition) {
@@ -47,16 +46,16 @@ const router = createRouter({
   },
 });
 
-// Navigation guard per controllare l'autenticazione
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const isAuthenticated = auth.currentUser; // Controlla se l'utente è autenticato
+// // Navigation guard per controllare l'autenticazione
+// router.beforeEach((to, from, next) => {
+//   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+//   const isAuthenticated = auth.currentUser; // Controlla se l'utente è autenticato
 
-  if (requiresAuth && !isAuthenticated) {
-    next({ name: "LoginPage" }); // Reindirizza alla pagina di login se non è autenticato ma è richiesta l'autenticazione
-  } else {
-    next(); // Continua la navigazione
-  }
-});
+//   if (requiresAuth && !isAuthenticated) {
+//     next({ name: "LoginPage" }); // Reindirizza alla pagina di login se non è autenticato ma è richiesta l'autenticazione
+//   } else {
+//     next(); // Continua la navigazione
+//   }
+// });
 
 export default router;

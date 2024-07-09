@@ -1,13 +1,25 @@
 <script>
 import AppHeader from "./components/AppHeader.vue";
 import AppFooter from "./components/AppFooter.vue";
-
-// import { db } from "./firebase";
+import { store } from "./store/index.js";
 
 export default {
+  data() {
+    return {
+      store,
+    };
+  },
   components: {
     AppHeader,
     AppFooter,
+  },
+
+  created() {
+    // Controlla se ci sono informazioni di sessione salvate nel localStorage al caricamento del componente
+    let storedSession = localStorage.getItem("supabaseSession");
+    if (storedSession) {
+      this.store.isAuthenticated = true;
+    }
   },
 };
 </script>

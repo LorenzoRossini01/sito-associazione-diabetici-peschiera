@@ -1,8 +1,19 @@
 <template>
-  <div class="container mx-auto mt-8">
+  <div
+    v-if="loading"
+    class="loader-container flex flex-col justfy-center items-center"
+  >
+    <div class="loader"></div>
+    <p>Loading...</p>
+  </div>
+  <div v-else class="container mx-auto mt-8">
     <div
       class="event-background w-full flex justify-center items-center"
-      :style="{ backgroundImage: `url(${event.image})` }"
+      :style="{
+        backgroundImage: event.image
+          ? `url(${event.image})`
+          : `url('https://placehold.co/600x400')`,
+      }"
     >
       <h1
         class="text-6xl font-bold py-20 px-8 w-full text-invert bg-[#ffffff70] backdrop-blur-sm shadow-2xl"
@@ -17,7 +28,11 @@
           <p class="text-gray-600 text-lg">Data: {{ event.date }}</p>
           <p class="text-gray-600 text-lg">Ora: {{ event.time }}</p>
         </div>
-        <img :src="event.image" alt="" class="mt-4 rounded-md w-full" />
+        <img
+          :src="event.image ? event.image : 'https://placehold.co/600x400'"
+          alt=""
+          class="mt-4 rounded-md w-full"
+        />
         <p class="mt-4">{{ event.description }}</p>
       </div>
       <div class="content-right w-1/2 px-8">
@@ -50,6 +65,7 @@ export default {
   data() {
     return {
       event: null,
+      loading: false, // Variabile di stato per il loader
     };
   },
   // computed: {
@@ -71,6 +87,8 @@ export default {
 
     async fetchCurrentEvent(id) {
       try {
+        this.loading = true; // Avvia il loader
+
         const { data: event, error } = await supabase
           .from("event")
           .select("*")
@@ -85,6 +103,8 @@ export default {
       } catch (error) {
         console.error("Error fetching event:", error.message);
         // Gestisci l'errore in modo appropriato (es. mostrando un messaggio all'utente)
+      } finally {
+        this.loading = false; // Ferma il loader
       }
     },
   },

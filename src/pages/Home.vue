@@ -2,11 +2,13 @@
   <AppHero />
   <AppAbout />
   <AppJoinUs />
+
   <AppEvents
     :paginatedEvents="paginatedEvents"
     :totalPages="totalPages"
     :currentPage.sync="currentPage"
     @update:currentPage="updateCurrentPage"
+    :loading="loading"
   />
   <AppContacts />
 </template>
@@ -27,6 +29,7 @@ export default {
       eventData: [],
       currentPage: 1,
       eventsPerPage: 9,
+      loading: false,
     };
   },
   components: {
@@ -53,6 +56,7 @@ export default {
     },
     async fetchEvents() {
       try {
+        this.loading = true;
         let { data, error } = await supabase
           .from("event")
           .select("*")
@@ -66,6 +70,8 @@ export default {
         console.log(this.eventData);
       } catch (error) {
         console.error("Error fetching events:", error.message);
+      } finally {
+        this.loading = false;
       }
     },
   },

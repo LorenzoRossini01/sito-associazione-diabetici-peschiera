@@ -78,7 +78,7 @@
 
           <p class="text-stone-600 text-center my-4">oppure</p>
           <button
-            @click.prevent="signInWithGoogle"
+            @click.prevent="logInWithGoogle"
             class="mb-2 group relative w-full flex justify-center items-center gap-4 py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-stone-600 shadow-md hover:bg-stone-100 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue active:bg-blue-700 transition duration-150 ease-in-out"
           >
             Accedi con Google
@@ -121,7 +121,7 @@
           Crea un nuovo account
         </h2>
       </div>
-      <form class="mt-8" @submit.prevent="handleSignUp">
+      <form class="mt-8" @submit.prevent="signUp">
         <div class="rounded-md shadow-sm">
           <div>
             <label for="email" class="sr-only">Email</label>
@@ -178,35 +178,78 @@
   </div>
 </template>
 
-<script setup>
+<script>
+import supabase from "../lib/supabaseClient.js";
 import { store } from "../store/index.js";
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import {
-  signInWithGoogle,
-  loginWithEmailAndPassword,
-  registerWithEmailAndPassword,
-} from "../firebaseConfig";
 
-const email = ref("");
-const password = ref("");
-const router = useRouter();
+export default {
+  name: "LoginPage",
+  data() {
+    return {
+      email: "",
+      password: "",
+      isSignUp: false,
+      store: store,
+    };
+  },
 
-let isSignUp = false;
+  methods: {
+    async signUp() {
+      try {
+        let { data, error } = await supabase.auth.signUp({
+          email: this.email,
+          password: this.password,
+        });
+        if (error) throw error;
+        console.log("User registered:", data);
+        this.handleAuthentication(data); // Gestisci l'autenticazione
+      } catch (error) {
+        console.error("Error signing up:", error.message);
+      }
+    },
 
-const logInWithEmailAndPassword = async () => {
-  try {
-    await loginWithEmailAndPassword(email.value, password.value);
-    console.log("User signed in with email");
-    store.isAuthenticated = true;
-    router.push({ name: "Home" });
-  } catch (error) {
-    console.error("Error signing in with email:", error);
-  }
-};
+    async logInWithEmailAndPassword() {
+      try {
+        let { data, error } = await supabase.auth.signInWithPassword({
+          email: this.email,
+          password: this.password,
+        });
+        if (error) throw error;
+        console.log("User logged in:", data);
+        this.handleAuthentication(data); // Gestisci l'autenticazione
+      } catch (error) {
+        console.error("Error logging in:", error.message);
+      }
+    },
 
-const handleSignUp = () => {
-  registerWithEmailAndPassword(email.value, password.value);
+    async logInWithGoogle() {
+      try {
+        let { user, session, error } = await supabase.auth.signInWithOAuth(
+          {
+            provider: "google",
+          },
+          {
+            redirectTo: window.location.origin,
+            scopes: "email",
+          }
+        );
+        if (error) throw error;
+        console.log("User logged in with Google:", user);
+        this.handleAuthentication(session); // Gestisci l'autenticazione
+      } catch (error) {
+        console.error("Error logging in with Google:", error.message);
+      }
+    },
+
+    handleAuthentication(data) {
+      // Salvataggio delle informazioni di sessione nel localStorage
+      localStorage.setItem("supabaseSession", JSON.stringify(data));
+      // Aggiorna lo stato di autenticazione nello store
+      this.store.isAuthenticated = true;
+      // Naviga alla home dopo l'autenticazione
+      this.$router.push({ name: "Home" });
+    },
+  },
 };
 </script>
 

@@ -1,8 +1,6 @@
 <script>
 import AppButton from "./AppButton.vue";
-import { ref } from "vue";
-import { db } from "../firebaseConfig";
-import { push, set } from "firebase/database";
+import supabase from "../lib/supabaseClient.js";
 
 export default {
   data() {
@@ -42,81 +40,30 @@ export default {
       };
     },
 
-    createEvent(eventData) {
-      const eventsRef = ref(db, "events");
-      const newEventRef = push(eventsRef);
-      set(newEventRef, eventData)
-        .then(() => {
-          console.log("Evento creato con successo!");
-          // Esegui azioni aggiuntive se necessario dopo la creazione dell'evento
-        })
-        .catch((error) => {
-          console.error("Errore durante la creazione dell'evento:", error);
-        });
+    async createEvent() {
+      try {
+        const { data, error } = await supabase
+          .from("event")
+          .insert(this.newEvent);
+
+        if (error) {
+          throw error;
+        }
+
+        console.log("Event created:", data);
+        this.resetForm();
+      } catch (error) {
+        console.error("Error creating event:", error.message);
+      }
     },
 
     addNewEvent() {
-      const eventData = { ...this.newEvent };
-      console.log(eventData);
-      this.createEvent(eventData);
-      console.log("Nuovo evento:", this.newEvent);
-      alert("Evento aggiunto con successo!");
-      this.resetForm();
+      this.createEvent();
+      this.$router.push("/");
     },
   },
 };
 </script>
-
-<!-- <script>
-import { ref } from "vue";
-import { db } from "../firebaseConfig";
-
-const newEvent = ref({
-  title: "",
-  description: "",
-  date: "",
-  time: "",
-  place: "",
-  image: "",
-});
-
-const handleImageUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      newEvent.value.image = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-};
-
-const resetForm = () => {
-  newEvent.value = {
-    title: "",
-    description: "",
-    date: "",
-    time: "",
-    place: "",
-    image: "",
-  };
-};
-
-const createEvent = () => {
-  const eventsRef = ref(db, "events");
-  const newEventRef = push(eventsRef);
-  set(newEventRef, newEvent.value)
-    .then(() => {
-      console.log("Evento creato con successo!");
-      alert("Evento aggiunto con successo!");
-      resetForm();
-    })
-    .catch((error) => {
-      console.error("Errore durante la creazione dell'evento:", error);
-      alert("Si è verificato un errore durante l'aggiunta dell'evento.");
-    });
-};
-</script> -->
 
 <template>
   <div>
@@ -141,6 +88,7 @@ const createEvent = () => {
                 v-model="newEvent.title"
                 type="text"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+                required
               />
             </label>
           </div>
@@ -154,6 +102,7 @@ const createEvent = () => {
                 v-model="newEvent.date"
                 type="date"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+                required
               />
             </label>
             <!-- ora  -->
@@ -165,6 +114,7 @@ const createEvent = () => {
                 v-model="newEvent.time"
                 type="time"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+                required
               />
             </label>
           </div>
@@ -178,6 +128,7 @@ const createEvent = () => {
                 v-model="newEvent.place"
                 type="place"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+                required
               />
             </label>
           </div>
@@ -193,6 +144,7 @@ const createEvent = () => {
                 type="text"
                 rows="3"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
+                required
               ></textarea>
             </label>
           </div>
@@ -228,12 +180,7 @@ const createEvent = () => {
       <div class="controls flex gap-8">
         <!-- bottoni  -->
         <AppButton text="Reset" type="reset" class="w-1/2" @click="resetForm" />
-        <AppButton
-          text="Salva evento"
-          type="primary"
-          class="w-1/2"
-          @click="addNewEvent"
-        />
+        <AppButton text="Salva evento" type="primary" class="w-1/2" />
       </div>
     </form>
   </div>

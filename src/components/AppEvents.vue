@@ -5,7 +5,14 @@
     >
       EVENTI
     </h2>
-    <div class="flex flex-wrap justify-center gap-8 px-4 lg:px-16">
+    <div
+      v-if="loading"
+      class="loader-container flex flex-col justfy-center items-center"
+    >
+      <div class="loader"></div>
+      <p>Loading...</p>
+    </div>
+    <div v-else class="flex flex-wrap justify-center gap-8 px-4 lg:px-16">
       <EventCard
         v-for="event in paginatedEvents"
         :key="event.id"
@@ -42,8 +49,12 @@ export default {
       type: Number,
       required: true,
     },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
   },
 };
 </script>
 
-<style></style>
+<style scoped></style>

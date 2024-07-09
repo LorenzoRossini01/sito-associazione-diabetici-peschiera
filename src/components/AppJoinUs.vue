@@ -1,15 +1,40 @@
 <script>
 import Accordion from "./Accordion.vue";
 import AppButton from "./AppButton.vue";
+import supabase from "../lib/supabaseClient.js";
 
 export default {
   data() {
-    return {};
+    return {
+      userData: {
+        name: "",
+        email: "",
+      },
+    };
   },
 
   components: {
     Accordion,
     AppButton,
+  },
+
+  methods: {
+    async handleNewsletterSignUp() {
+      try {
+        let { data, error } = await supabase
+          .from("newsletter_subscribers")
+          .insert(this.userData);
+
+        if (error) {
+          throw error;
+        }
+
+        console.log("Newsletter subscription submitted", data);
+        this.userData = { name: "", email: "" };
+      } catch (error) {
+        console.error("Error while subscribing:", error.message);
+      }
+    },
   },
 };
 </script>
@@ -35,17 +60,25 @@ export default {
         </p>
         <form class="my-8">
           <input
+            v-model="userData.name"
             type="text"
             placeholder="Nome"
+            autocomplete="name"
             class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-blue-600"
           />
           <input
+            v-model="userData.email"
             type="email"
             placeholder="Email"
+            autocomplete="email"
             class="w-full px-4 py-2 border rounded-md mt-4 focus:outline-none focus:ring-blue-6"
           />
         </form>
-        <AppButton type="primary" text="unisciti a noi" />
+        <AppButton
+          type="primary"
+          text="unisciti a noi"
+          @click="handleNewsletterSignUp"
+        />
       </div>
     </div>
   </section>
