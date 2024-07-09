@@ -18,13 +18,13 @@ import AppAbout from "../components/AppAbout.vue";
 import AppJoinUs from "../components/AppJoinUs.vue";
 import AppEvents from "../components/AppEvents.vue";
 import AppContacts from "../components/AppContacts.vue";
+import supabase from "../lib/supabaseClient";
 
-import { eventData } from "../data/eventData.js";
 export default {
   name: "Home",
   data() {
     return {
-      eventData: eventData,
+      eventData: [],
       currentPage: 1,
       eventsPerPage: 9,
     };
@@ -47,11 +47,30 @@ export default {
       return Math.ceil(this.eventData.length / this.eventsPerPage);
     },
   },
-
   methods: {
     updateCurrentPage(newPage) {
       this.currentPage = newPage;
     },
+    async fetchEvents() {
+      try {
+        let { data, error } = await supabase
+          .from("event")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          throw error;
+        }
+
+        this.eventData = data;
+        console.log(this.eventData);
+      } catch (error) {
+        console.error("Error fetching events:", error.message);
+      }
+    },
+  },
+  created() {
+    this.fetchEvents();
   },
 };
 </script>

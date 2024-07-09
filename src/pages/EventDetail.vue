@@ -40,18 +40,25 @@
 </template>
 
 <script>
-import { eventData } from "../data/eventData.js";
+// import { eventData } from "../data/eventData.js";
 import AppButton from "../components/AppButton.vue";
+import supabase from "../lib/supabaseClient.js";
 
 export default {
   name: "EventDetail",
-  computed: {
-    event() {
-      return eventData.find(
-        (event) => event.id === parseInt(this.$route.params.id)
-      );
-    },
+
+  data() {
+    return {
+      event: null,
+    };
   },
+  // computed: {
+  //   event() {
+  //     return eventData.find(
+  //       (event) => event.id === parseInt(this.$route.params.id)
+  //     );
+  //   },
+  // },
   components: {
     AppButton,
   },
@@ -61,6 +68,29 @@ export default {
       const currentDate = new Date();
       return eventDate > currentDate;
     },
+
+    async fetchCurrentEvent(id) {
+      try {
+        const { data: event, error } = await supabase
+          .from("event")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        this.event = event;
+      } catch (error) {
+        console.error("Error fetching event:", error.message);
+        // Gestisci l'errore in modo appropriato (es. mostrando un messaggio all'utente)
+      }
+    },
+  },
+
+  created() {
+    this.fetchCurrentEvent(this.$route.params.id);
   },
 };
 </script>

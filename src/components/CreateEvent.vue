@@ -1,5 +1,9 @@
 <script>
 import AppButton from "./AppButton.vue";
+import { ref } from "vue";
+import { db } from "../firebaseConfig";
+import { push, set } from "firebase/database";
+
 export default {
   data() {
     return {
@@ -37,8 +41,24 @@ export default {
         image: "",
       };
     },
+
+    createEvent(eventData) {
+      const eventsRef = ref(db, "events");
+      const newEventRef = push(eventsRef);
+      set(newEventRef, eventData)
+        .then(() => {
+          console.log("Evento creato con successo!");
+          // Esegui azioni aggiuntive se necessario dopo la creazione dell'evento
+        })
+        .catch((error) => {
+          console.error("Errore durante la creazione dell'evento:", error);
+        });
+    },
+
     addNewEvent() {
-      // Logica per aggiungere il nuovo evento, ad esempio inviarlo al server o salvarlo nel database
+      const eventData = { ...this.newEvent };
+      console.log(eventData);
+      this.createEvent(eventData);
       console.log("Nuovo evento:", this.newEvent);
       alert("Evento aggiunto con successo!");
       this.resetForm();
@@ -46,6 +66,57 @@ export default {
   },
 };
 </script>
+
+<!-- <script>
+import { ref } from "vue";
+import { db } from "../firebaseConfig";
+
+const newEvent = ref({
+  title: "",
+  description: "",
+  date: "",
+  time: "",
+  place: "",
+  image: "",
+});
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      newEvent.value.image = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const resetForm = () => {
+  newEvent.value = {
+    title: "",
+    description: "",
+    date: "",
+    time: "",
+    place: "",
+    image: "",
+  };
+};
+
+const createEvent = () => {
+  const eventsRef = ref(db, "events");
+  const newEventRef = push(eventsRef);
+  set(newEventRef, newEvent.value)
+    .then(() => {
+      console.log("Evento creato con successo!");
+      alert("Evento aggiunto con successo!");
+      resetForm();
+    })
+    .catch((error) => {
+      console.error("Errore durante la creazione dell'evento:", error);
+      alert("Si è verificato un errore durante l'aggiunta dell'evento.");
+    });
+};
+</script> -->
 
 <template>
   <div>
@@ -157,7 +228,12 @@ export default {
       <div class="controls flex gap-8">
         <!-- bottoni  -->
         <AppButton text="Reset" type="reset" class="w-1/2" @click="resetForm" />
-        <AppButton text="Salva evento" type="primary" class="w-1/2" />
+        <AppButton
+          text="Salva evento"
+          type="primary"
+          class="w-1/2"
+          @click="addNewEvent"
+        />
       </div>
     </form>
   </div>

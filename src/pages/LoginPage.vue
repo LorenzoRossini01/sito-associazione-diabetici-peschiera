@@ -84,13 +84,13 @@
             Accedi con Google
             <i class="fa-brands fa-google"></i>
           </button>
-          <button
+          <!-- <button
             @click.prevent="signInWithFacebook"
             class="group relative w-full flex justify-center items-center gap-4 py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue active:bg-blue-700 transition duration-150 ease-in-out"
           >
             Accedi con Facebook
             <i class="fa-brands fa-facebook"></i>
-          </button>
+          </button> -->
         </div>
       </form>
 

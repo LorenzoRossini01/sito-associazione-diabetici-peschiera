@@ -9,6 +9,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { getDatabase } from "firebase/database";
 import router from "./router";
 
 // Configurazione Firebase
@@ -28,6 +29,7 @@ const app = initializeApp(firebaseConfig);
 // Ottieni l'istanza di autenticazione
 const auth = getAuth(app);
 
+const db = getDatabase(app);
 // Ascolta i cambi di stato dell'utente
 onAuthStateChanged(auth, (user) => {
   if (user) {
@@ -99,4 +101,5 @@ export {
   signOutUser,
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
+  db,
 };
