@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!isSignUp"
-    class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8"
+    class="wrapper flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8"
   >
     <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
       <div>
@@ -53,18 +53,16 @@
             <label
               for="remember_me"
               class="ml-2 block text-sm leading-5 text-gray-900"
+              >Ricordami</label
             >
-              Ricordami
-            </label>
           </div>
 
           <div class="text-sm leading-5">
             <a
               href="#"
               class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150"
+              >Hai dimenticato la password?</a
             >
-              Hai dimenticato la password?
-            </a>
           </div>
         </div>
 
@@ -77,19 +75,31 @@
           </button>
 
           <p class="text-stone-600 text-center my-4">oppure</p>
-          <button
+          <!-- <div
+            id="g_id_onload"
+            data-client_id="775380693555-mhmisr1iq7gvdvnbtk4adr4grp53rt77.apps.googleusercontent.com"
+            data-context="signin"
+            data-ux_mode="popup"
+            data-login_uri="http://localhost:5173/auth/v1/callback"
+            data-auto_select="true"
+            data-itp_support="true"
+          ></div>
+
+          <div
+            class="g_id_signin"
+            data-type="standard"
+            data-shape="rectangular"
+            data-theme="outline"
+            data-text="continue_with"
+            data-size="large"
+            data-logo_alignment="left"
+          ></div> -->
+          <!-- <button
             @click.prevent="logInWithGoogle"
             class="mb-2 group relative w-full flex justify-center items-center gap-4 py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-stone-600 shadow-md hover:bg-stone-100 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue active:bg-blue-700 transition duration-150 ease-in-out"
           >
             Accedi con Google
             <i class="fa-brands fa-google"></i>
-          </button>
-          <!-- <button
-            @click.prevent="signInWithFacebook"
-            class="group relative w-full flex justify-center items-center gap-4 py-2 px-4 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue active:bg-blue-700 transition duration-150 ease-in-out"
-          >
-            Accedi con Facebook
-            <i class="fa-brands fa-facebook"></i>
           </button> -->
         </div>
       </form>
@@ -101,9 +111,8 @@
             href="#"
             @click="isSignUp = true"
             class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150"
+            >Crea uno</a
           >
-            Crea uno
-          </a>
         </p>
       </div>
     </div>
@@ -111,7 +120,7 @@
 
   <div
     v-else
-    class="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8"
+    class="wrapper flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8"
   >
     <div class="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
       <div>
@@ -186,10 +195,10 @@ export default {
   name: "LoginPage",
   data() {
     return {
-      email: "",
-      password: "",
+      email: "lory.rox.2001@gmail.com",
+      password: "Loryrox2001_",
       isSignUp: false,
-      store: store,
+      store,
     };
   },
 
@@ -202,9 +211,10 @@ export default {
         });
         if (error) throw error;
         console.log("User registered:", data);
-        this.handleAuthentication(data); // Gestisci l'autenticazione
+        this.handleAuthentication(data);
       } catch (error) {
         console.error("Error signing up:", error.message);
+        alert("Si è verificato un errore durante la registrazione. Riprova.");
       }
     },
 
@@ -216,43 +226,42 @@ export default {
         });
         if (error) throw error;
         console.log("User logged in:", data);
-        this.handleAuthentication(data); // Gestisci l'autenticazione
+        this.handleAuthentication(data);
       } catch (error) {
         console.error("Error logging in:", error.message);
+        alert("Si è verificato un errore durante il login. Riprova.");
       }
     },
 
-    async logInWithGoogle() {
-      try {
-        let { user, session, error } = await supabase.auth.signInWithOAuth(
-          {
-            provider: "google",
-          },
-          {
-            redirectTo: window.location.origin,
-            scopes: "email",
-          }
-        );
-        if (error) throw error;
-        console.log("User logged in with Google:", user);
-        this.handleAuthentication(session); // Gestisci l'autenticazione
-      } catch (error) {
-        console.error("Error logging in with Google:", error.message);
-      }
-    },
+    // async logInWithGoogle() {
+    //   try {
+    //     let { user, session, error } = await supabase.auth.signInWithOAuth({
+    //       provider: "google",
+    //     });
+    //     if (error) throw error;
+    //     console.log("User logged in with Google:", user);
+    //     this.handleAuthentication({ user, session });
+    //   } catch (error) {
+    //     console.error("Error logging in with Google:", error.message);
+    //     alert(
+    //       "Si è verificato un errore durante il login con Google. Riprova."
+    //     );
+    //   }
+    // },
 
     handleAuthentication(data) {
-      // Salvataggio delle informazioni di sessione nel localStorage
-      localStorage.setItem("supabaseSession", JSON.stringify(data));
-      // Aggiorna lo stato di autenticazione nello store
-      this.store.isAuthenticated = true;
-      // Naviga alla home dopo l'autenticazione
-      this.$router.push({ name: "Home" });
+      store.user = data.user;
+      localStorage.setItem("user", data.user);
+      this.$router.push("/callback/auth");
     },
   },
 };
 </script>
 
 <style scoped>
-/* Personalizza lo stile a tuo piacimento */
+/* Aggiungi qui i tuoi stili personalizzati */
+.wrapper {
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  background-image: -webkit-repeating-linear-gradient(blue, skyblue, blue);
+}
 </style>

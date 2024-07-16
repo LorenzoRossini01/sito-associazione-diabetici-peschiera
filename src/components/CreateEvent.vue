@@ -1,70 +1,3 @@
-<script>
-import AppButton from "./AppButton.vue";
-import supabase from "../lib/supabaseClient.js";
-
-export default {
-  data() {
-    return {
-      newEvent: {
-        title: "",
-        description: "",
-        date: "",
-        time: "",
-        place: "",
-        image: "",
-      },
-    };
-  },
-  components: {
-    AppButton,
-  },
-  methods: {
-    handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.newEvent.image = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    resetForm() {
-      this.newEvent = {
-        title: "",
-        description: "",
-        date: "",
-        time: "",
-        place: "",
-        image: "",
-      };
-    },
-
-    async createEvent() {
-      try {
-        const { data, error } = await supabase
-          .from("event")
-          .insert(this.newEvent);
-
-        if (error) {
-          throw error;
-        }
-
-        console.log("Event created:", data);
-        this.resetForm();
-      } catch (error) {
-        console.error("Error creating event:", error.message);
-      }
-    },
-
-    addNewEvent() {
-      this.createEvent();
-      this.$router.push("/");
-    },
-  },
-};
-</script>
-
 <template>
   <div>
     <h2
@@ -125,8 +58,9 @@ export default {
                 >Luogo</span
               >
               <input
+                ref="autocomplete"
                 v-model="newEvent.place"
-                type="place"
+                type="text"
                 class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
                 required
               />
@@ -185,6 +119,98 @@ export default {
     </form>
   </div>
 </template>
+
+<script>
+import AppButton from "./AppButton.vue";
+import supabase from "../lib/supabaseClient.js";
+
+export default {
+  components: {
+    AppButton,
+  },
+  data() {
+    return {
+      newEvent: {
+        title: "",
+        description: "",
+        date: "",
+        time: "",
+        place: "",
+        image: "",
+      },
+      googleMapsLoaded: false, // Aggiunto stato per controllare se Google Maps è stato caricato
+    };
+  },
+  methods: {
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.newEvent.image = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    resetForm() {
+      this.newEvent = {
+        title: "",
+        description: "",
+        date: "",
+        time: "",
+        place: "",
+        image: "",
+      };
+    },
+    async createEvent() {
+      try {
+        const { data, error } = await supabase
+          .from("event")
+          .insert(this.newEvent);
+
+        if (error) {
+          throw error;
+        }
+
+        console.log("Event created:", data);
+        this.resetForm();
+      } catch (error) {
+        console.error("Error creating event:", error.message);
+      }
+    },
+    addNewEvent() {
+      this.createEvent();
+      setTimeout(() => {
+        this.$router.push("/");
+      }, 4000);
+    },
+    initAutocomplete() {
+      if (!this.googleMapsLoaded) return; // Esce se Google Maps non è ancora caricato completamente
+
+      const input = this.$refs.autocomplete;
+      const autocomplete = new google.maps.places.Autocomplete(input);
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        this.newEvent.place = place.formatted_address;
+      });
+    },
+    loadGoogleMapsScript() {
+      if (this.googleMapsLoaded) return; // Esce se Google Maps è già stato caricato
+
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBU8kdhaFmcTMg7oo3kbB8dUTrEu3W9tnY&libraries=places`;
+      script.onload = () => {
+        this.googleMapsLoaded = true; // Imposta il flag a true quando il caricamento è completato
+        this.initAutocomplete(); // Inizializza l'autocompletamento dopo il caricamento
+      };
+      document.head.appendChild(script);
+    },
+  },
+  mounted() {
+    this.loadGoogleMapsScript(); // Carica il codice di Google Maps all'avvio del componente
+  },
+};
+</script>
 
 <style scoped>
 .img-col {

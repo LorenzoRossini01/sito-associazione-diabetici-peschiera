@@ -25,12 +25,12 @@ export default {
           .from("newsletter_subscribers")
           .insert(this.userData);
 
+        this.userData = { name: "", email: "" };
         if (error) {
           throw error;
         }
 
         console.log("Newsletter subscription submitted", data);
-        this.userData = { name: "", email: "" };
       } catch (error) {
         console.error("Error while subscribing:", error.message);
       }

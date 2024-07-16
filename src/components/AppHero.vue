@@ -23,7 +23,7 @@ export default {
         />
       </div>
       <div
-        class="w-full lg:w-3/6 flex text-center lg:text-start flex-col justify-end items-center lg:items-start px-4 lg:px-16 gap-8 pb-8"
+        class="w-full lg:w-1/2 flex text-center lg:text-start flex-col justify-end items-center lg:items-start px-4 lg:px-16 gap-8 pb-8"
       >
         <h1 class="text-3xl lg:text-7xl font-bold text-wrap text-blue-600">
           SOSTIENI LA NOSTRA ASSOCIAZIONE

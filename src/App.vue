@@ -14,19 +14,27 @@ export default {
     AppFooter,
   },
 
+  computed: {},
+
   created() {
     // Controlla se ci sono informazioni di sessione salvate nel localStorage al caricamento del componente
     let storedSession = localStorage.getItem("supabaseSession");
     if (storedSession) {
       this.store.isAuthenticated = true;
     }
+
+    if (localStorage.getItem("user")) {
+      this.store.user = localStorage.getItem("user");
+    }
+
+    console.log(this.user);
   },
 };
 </script>
 
 <template>
   <AppHeader />
-  <main class="h-100%">
+  <main>
     <router-view></router-view>
   </main>
   <AppFooter />

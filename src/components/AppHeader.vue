@@ -11,6 +11,15 @@ export default {
       store,
     };
   },
+
+  computed: {
+    isStored() {
+      return localStorage.getItem("sb-xbcdjkssdzealalkwdrd-auth-token")
+        ? true
+        : false;
+    },
+  },
+
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
@@ -20,18 +29,25 @@ export default {
       try {
         let { error } = await supabase.auth.signOut();
         if (error) throw error;
+        store.user = null;
         localStorage.removeItem("supabaseSession"); // Rimuovi le informazioni di sessione dal localStorage
-        this.store.isAuthenticated = false; // Aggiorna lo stato di autenticazione nello store
+        localStorage.removeItem("user");
+        this.$router.push("/"); // Rimuovi le informazioni di sessione dal localStorage
       } catch (error) {
         console.error("Error signing out:", error.message);
       }
     },
   },
+
+  created() {
+    // console.log(localStorage.supabaseSession);
+    // console.log(localStorage.getItem("sb-xbcdjkssdzealalkwdrd-auth-token"));
+  },
 };
 </script>
 
 <template>
-  <div class="px-8">
+  <header class="px-8">
     <!-- Navbar -->
     <nav class="py-4 md:py-8 flex items-center justify-between">
       <!-- Logo -->
@@ -76,12 +92,12 @@ export default {
         <li>
           <a href="#contacts" :class="navLinkClasses">CONTATTACI</a>
         </li>
-        <li v-if="store.isAuthenticated">
+        <li v-if="store.user">
           <router-link to="/create-event" :class="navLinkClasses"
             >AGGIUNGI EVENTO</router-link
           >
         </li>
-        <li v-if="store.isAuthenticated">
+        <li v-if="store.user">
           <a href="#" :class="navLinkClasses" @click="signOut">LOG-OUT</a>
         </li>
       </ul>
@@ -107,16 +123,16 @@ export default {
       <li>
         <a href="#contacts" :class="navLinkClasses">CONTATTACI</a>
       </li>
-      <li v-if="store.isAuthenticated">
+      <li v-if="isStored">
         <router-link to="/create-event" :class="navLinkClasses"
           >AGGIUNGI EVENTO</router-link
         >
       </li>
-      <li v-if="store.isAuthenticated">
+      <li v-if="isStored">
         <a href="#" :class="navLinkClasses" @click="signOut">LOG-OUT</a>
       </li>
     </ul>
-  </div>
+  </header>
 </template>
 
 <style scoped>

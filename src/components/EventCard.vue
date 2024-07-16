@@ -15,7 +15,7 @@
     </router-link>
     <div class="card-body w-100 flex justify-between items-center pt-4">
       <h3 class="text-xl font-bold">{{ event.title }}</h3>
-      <p class="text-gray-600 text-sm">{{ event.date }}</p>
+      <p class="text-gray-600 text-sm">{{ store.getDate(event.date) }}</p>
     </div>
     <div class="card-footer mt-auto pt-4">
       <AppButton
@@ -31,8 +31,14 @@
 
 <script>
 import AppButton from "./AppButton.vue";
+import { store } from "../store/index.js";
 
 export default {
+  data() {
+    return {
+      store,
+    };
+  },
   props: {
     event: {
       type: Object,

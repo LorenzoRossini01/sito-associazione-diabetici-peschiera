@@ -3,6 +3,7 @@ import Home from "../pages/Home.vue";
 import AddEvent from "../pages/AddEvent.vue";
 import EventDetail from "../pages/EventDetail.vue";
 import LoginPage from "../pages/LoginPage.vue";
+import CallbackAuth from "../pages/CallbackAuth.vue";
 
 const routes = [
   {
@@ -26,6 +27,11 @@ const routes = [
     path: "/login",
     name: "LoginPage",
     component: LoginPage,
+  },
+  {
+    path: "/callback/auth",
+    name: "CallbackAuth",
+    component: CallbackAuth,
   },
 ];
 
