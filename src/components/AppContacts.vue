@@ -61,6 +61,7 @@
                   class="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 block w-full rounded-md sm:text-sm focus:ring-1"
                 ></textarea>
               </label>
+              <PrivacyPolicy @update:accepted="toggleAccepted" />
               <AppButton type="submit" text="Invia" class="w-full mt-4" />
             </form>
           </div>
@@ -105,10 +106,12 @@
 <script>
 import emailjs from "emailjs-com";
 import AppButton from "./AppButton.vue";
+import PrivacyPolicy from "./PrivacyPolicy.vue";
 
 export default {
   components: {
     AppButton,
+    PrivacyPolicy,
   },
   data() {
     return {
@@ -118,10 +121,19 @@ export default {
         email: "",
         messaggio: "",
       },
+      accepted: false,
     };
   },
   methods: {
+    toggleAccepted(isAccepted) {
+      this.accepted = isAccepted;
+    },
+
     async sendEmail() {
+      if (!this.accepted) {
+        alert("Per favore, accetta la Privacy Policy prima di procedere.");
+        return;
+      }
       try {
         // # TODO: mettere queste credenziali nel file env
         const serviceID = "service_c3fe9cu";
@@ -141,6 +153,7 @@ export default {
           email: "",
           messaggio: "",
         };
+        this.accepted = false;
       } catch (error) {
         console.error("Errore nell'invio dell'email:", error);
         alert("Si è verificato un errore. Per favore riprova più tardi.");

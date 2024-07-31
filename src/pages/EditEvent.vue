@@ -1,6 +1,6 @@
 <template>
-  <div class="">
-    <CreateEvent />
+  <div class="h-screen">
+    <CreateEvent :isEditing="true" />
   </div>
 </template>
 

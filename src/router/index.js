@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../pages/Home.vue";
 import AddEvent from "../pages/AddEvent.vue";
+import EditEvent from "../pages/EditEvent.vue";
 import EventDetail from "../pages/EventDetail.vue";
 import LoginPage from "../pages/LoginPage.vue";
 import CallbackAuth from "../pages/CallbackAuth.vue";
@@ -15,6 +16,12 @@ const routes = [
     path: "/create-event",
     name: "AddEvent",
     component: AddEvent,
+    meta: { requiresAuth: true }, // Richiede autenticazione per accedere a questa route
+  },
+  {
+    path: "/edit-event/:id",
+    name: "EditEvent",
+    component: EditEvent,
     meta: { requiresAuth: true }, // Richiede autenticazione per accedere a questa route
   },
   {

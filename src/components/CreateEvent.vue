@@ -1,15 +1,23 @@
 <template>
   <div>
+    <!-- Loading Spinner -->
+    <div
+      v-if="loading"
+      class="loader-container flex flex-col justify-center items-center absolute bottom-0 left-0 right-0 top-0 bg-white z-20 h-screen"
+    >
+      <div class="loader"></div>
+      <p>Loading...</p>
+    </div>
     <h2
       class="text-3xl lg:text-6xl font-extrabold pb-8 text-center text-blue-600 uppercase"
     >
-      Aggiungi un nuovo evento
+      {{ isEditing ? "Modifica Evento" : "Aggiungi un nuovo evento" }}
     </h2>
 
-    <form @submit.prevent="addNewEvent" class="p-8">
-      <div class="w-100% flex gap-8 mb-8">
+    <form @submit.prevent="handleSubmit" class="p-8">
+      <div class="w-100% lg:h-[25rem] flex flex-col lg:flex-row gap-8 mb-8">
         <div
-          class="left w-1/2 gap-4 bg-white p-8 rounded-md shadow-lg flex flex-col"
+          class="left w-full lg:w-1/2 gap-4 bg-white p-8 rounded-md shadow-lg flex flex-col"
         >
           <div class="col flex">
             <!-- titolo -->
@@ -85,14 +93,12 @@
         </div>
 
         <div
-          class="right w-1/2 h-100% bg-white p-2 rounded-md shadow-lg flex flex-col"
+          class="right w-full lg:w-1/2 h-[20rem] lg:h-full bg-white p-2 rounded-md shadow-lg flex"
         >
-          <div
-            class="img-col w-full h-full flex justify-center items-center relative"
-          >
+          <div class="img-col w-full min-h-full relative">
             <!-- immagine  -->
             <label
-              class="block text-center border-blue-400 z-10 hover:bg-blue-100 backdrop-blur-3xl border-4 px-8 py-4 rounded-full absolute"
+              class="block text-center border-blue-400 z-10 hover:bg-blue-100 backdrop-blur-3xl border-4 px-8 py-4 rounded-full absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]"
             >
               <span class="block w-full h-100% text-sm font-bold text-blue-400"
                 >Aggiungi un'immagine</span
@@ -100,13 +106,12 @@
 
               <input type="file" class="hidden" @change="handleImageUpload" />
             </label>
-            <div v-if="newEvent.image" class="mt-4">
-              <img
-                :src="newEvent.image"
-                alt="Event Image"
-                class="rounded-md absolute top-0 left-0 right-0 bottom-0"
-              />
-            </div>
+            <img
+              v-if="newEvent.image"
+              :src="newEvent.image"
+              alt="Event Image"
+              class="rounded-md object-cover w-full h-full"
+            />
           </div>
         </div>
       </div>
@@ -114,7 +119,11 @@
       <div class="controls flex gap-8">
         <!-- bottoni  -->
         <AppButton text="Reset" type="reset" class="w-1/2" @click="resetForm" />
-        <AppButton text="Salva evento" type="primary" class="w-1/2" />
+        <AppButton
+          :text="isEditing ? 'Aggiorna evento' : 'Salva evento'"
+          type="primary"
+          class="w-1/2"
+        />
       </div>
     </form>
   </div>
@@ -125,6 +134,12 @@ import AppButton from "./AppButton.vue";
 import supabase from "../lib/supabaseClient.js";
 
 export default {
+  props: {
+    isEditing: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: {
     AppButton,
   },
@@ -138,6 +153,7 @@ export default {
         place: "",
         image: "",
       },
+      loading: false, // Aggiunto stato per controllare lo stato di caricamento
       googleMapsLoaded: false, // Aggiunto stato per controllare se Google Maps è stato caricato
     };
   },
@@ -163,6 +179,7 @@ export default {
       };
     },
     async createEvent() {
+      this.loading = true;
       try {
         const { data, error } = await supabase
           .from("event")
@@ -174,15 +191,61 @@ export default {
 
         console.log("Event created:", data);
         this.resetForm();
+        this.$router.push("/");
+        this.loading = false;
       } catch (error) {
+        this.loading = false;
         console.error("Error creating event:", error.message);
       }
     },
-    addNewEvent() {
-      this.createEvent();
-      setTimeout(() => {
+    async updateEvent() {
+      this.loading = true;
+
+      try {
+        const { data, error } = await supabase
+          .from("event")
+          .update(this.newEvent)
+          .eq("id", this.newEvent.id);
+        this.loading = false;
+
+        if (error) {
+          this.loading = false;
+
+          throw error;
+        }
+
+        console.log("Event updated:", data);
         this.$router.push("/");
-      }, 4000);
+      } catch (error) {
+        console.error("Error updating event:", error.message);
+      }
+    },
+    handleSubmit() {
+      if (this.isEditing) {
+        this.updateEvent();
+      } else {
+        this.createEvent();
+      }
+    },
+    async fetchEventData(id) {
+      this.loading = true;
+      try {
+        const { data, error } = await supabase
+          .from("event")
+          .select("*")
+          .eq("id", id)
+          .single();
+        this.loading = false;
+
+        if (error) {
+          this.loading = false;
+          throw error;
+        }
+
+        this.newEvent = data;
+      } catch (error) {
+        console.error("Error fetching event data:", error.message);
+      }
     },
     initAutocomplete() {
       if (!this.googleMapsLoaded) return; // Esce se Google Maps non è ancora caricato completamente
@@ -192,6 +255,10 @@ export default {
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
         this.newEvent.place = place.formatted_address;
+        let latitude = place.geometry.location.lat();
+        let longitude = place.geometry.location.lng();
+        console.log(latitude, longitude);
+        console.log(place);
       });
     },
     loadGoogleMapsScript() {
@@ -208,6 +275,10 @@ export default {
   },
   mounted() {
     this.loadGoogleMapsScript(); // Carica il codice di Google Maps all'avvio del componente
+    if (this.isEditing) {
+      const eventId = this.$route.params.id;
+      this.fetchEventData(eventId);
+    }
   },
 };
 </script>

@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@fawmi/vue-google-maps": "^0.9.79",
+    "@googlemaps/js-api-loader": "^1.16.6",
     "@supabase/supabase-js": "^2.44.3",
     "axios": "^1.7.2",
     "emailjs-com": "^3.2.0",

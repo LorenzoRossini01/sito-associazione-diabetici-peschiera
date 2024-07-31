@@ -1,4 +1,5 @@
 <template>
+  <AppModal />
   <AppHero />
   <AppAbout />
   <AppJoinUs />
@@ -20,6 +21,7 @@ import AppAbout from "../components/AppAbout.vue";
 import AppJoinUs from "../components/AppJoinUs.vue";
 import AppEvents from "../components/AppEvents.vue";
 import AppContacts from "../components/AppContacts.vue";
+import AppModal from "../components/AppModal.vue";
 import supabase from "../lib/supabaseClient";
 
 export default {
@@ -39,6 +41,7 @@ export default {
     AppJoinUs,
     AppEvents,
     AppContacts,
+    AppModal,
   },
   computed: {
     paginatedEvents() {
@@ -60,6 +63,7 @@ export default {
         let { data, error } = await supabase
           .from("event")
           .select("*")
+          .is("deleted_at", null) // Aggiungi questa riga per filtrare gli eventi che non sono stati eliminati
           .order("created_at", { ascending: false });
 
         if (error) {

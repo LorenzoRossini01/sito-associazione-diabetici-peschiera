@@ -24,7 +24,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 500px; /* Regola l'altezza come necessario */
+  /* height: 500px; Regola l'altezza come necessario */
 }
 
 .loader {

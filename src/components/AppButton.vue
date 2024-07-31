@@ -1,7 +1,10 @@
 <script>
+import { store } from "../store/index.js";
 export default {
   data() {
-    return {};
+    return {
+      store,
+    };
   },
   computed: {
     buttonClasses() {
@@ -17,9 +20,13 @@ export default {
   props: {
     type: String,
     text: String,
+    newsletter: Boolean,
   },
   methods: {
     handleClick() {
+      if (this.newsletter == true) {
+        store.showModal = true;
+      }
       console.log("Button clicked!");
     },
   },

@@ -123,12 +123,12 @@ export default {
       <li>
         <a href="#contacts" :class="navLinkClasses">CONTATTACI</a>
       </li>
-      <li v-if="isStored">
+      <li v-if="store.user">
         <router-link to="/create-event" :class="navLinkClasses"
           >AGGIUNGI EVENTO</router-link
         >
       </li>
-      <li v-if="isStored">
+      <li v-if="store.user">
         <a href="#" :class="navLinkClasses" @click="signOut">LOG-OUT</a>
       </li>
     </ul>

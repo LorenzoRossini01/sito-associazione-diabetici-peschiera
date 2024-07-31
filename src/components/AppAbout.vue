@@ -29,7 +29,7 @@ export default {
           attività: convegni, corsi Diabetico Guida, camminate non competitive,
           screening glicemici, attività sociali
         </p>
-        <AppButton text="unisciti a noi" />
+        <AppButton text="unisciti a noi" :newsletter="true" />
       </div>
       <div class="right w-full lg:w-3/6">
         <img

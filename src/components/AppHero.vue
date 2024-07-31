@@ -28,7 +28,7 @@ export default {
         <h1 class="text-3xl lg:text-7xl font-bold text-wrap text-blue-600">
           SOSTIENI LA NOSTRA ASSOCIAZIONE
         </h1>
-        <AppButton type="primary" text="unisciti a noi" />
+        <AppButton type="primary" text="unisciti a noi" :newsletter="true" />
       </div>
     </div>
     <div id="sponsor" class="h-[12rem]">
